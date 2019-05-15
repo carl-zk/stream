@@ -1,0 +1,35 @@
+server:
+  port: 8091
+spring:
+  application:
+    name: stream-service
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: staging
+          group: golden-unicorn-${spring.application.name}
+          binder: rabbit-server
+        output:
+          destination: queue.pretty.log.messages
+          binder: rabbit-server
+      rabbit:
+        bindings:
+          input:
+            consumer:
+              binding-routing-key:
+                entity.user
+      binders:
+        rabbit-server:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: localhost
+                port: 5672
+                username: springcloud
+                password: 123456
+                virtual-host: spring
+logging:
+  level:
+    root: info
