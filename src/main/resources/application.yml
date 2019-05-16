@@ -6,21 +6,23 @@ spring:
   cloud:
     stream:
       bindings:
-        input:
+        default:
           destination: staging
-          group: golden-unicorn-${spring.application.name}
-          binder: rabbit-server
+          group-prefix: golden-unicorn
+          binder: rabbit
         output:
-          destination: queue.pretty.log.messages
-          binder: rabbit-server
+          destination: staging
+          binder: rabbit
       rabbit:
         bindings:
           input:
             consumer:
-              binding-routing-key:
-                entity.user
+              binding-routing-key: entities.user
+          output:
+            producer:
+              routing-key-expression: '"entities.user"'
       binders:
-        rabbit-server:
+        rabbit:
           type: rabbit
           environment:
             spring:
