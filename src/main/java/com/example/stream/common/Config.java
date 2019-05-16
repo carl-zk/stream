@@ -32,26 +32,14 @@ import java.lang.reflect.Method;
 @Configuration
 public class Config {
     private static Logger logger = LoggerFactory.getLogger(Config.class);
-    /*    @Autowired
-        private RabbitMessageChannelBinder rabbitMessageChannelBinder;*/
-    @Autowired
-    BindingService bindingService;
-    @Autowired
-    BindingServiceProperties bindingServiceProperties;
-    @Autowired
-    ApplicationContext applicationContext;
 
     @Bean(name = BindingServiceConfiguration.STREAM_LISTENER_ANNOTATION_BEAN_POST_PROCESSOR_NAME)
     public MyStreamListenerAnnotationBeanPostProcessor streamListenerAnnotationBeanPostProcessor() {
         return new MyStreamListenerAnnotationBeanPostProcessor();
     }
 
-/*    public void test() {
-        //rabbitMessageChannelBinder.bindConsumer();
-
-        bindingServiceProperties.setBindings();
-
-
-        bindingService.bindConsumer()
-    }*/
+    @Bean
+    public MyStreamListenerProcessor myStreamListenerProcessor() {
+        return new MyStreamListenerProcessor();
+    }
 }

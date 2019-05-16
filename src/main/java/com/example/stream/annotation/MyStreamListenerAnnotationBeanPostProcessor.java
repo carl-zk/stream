@@ -5,10 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.cloud.stream.binder.ConsumerProperties;
 import org.springframework.cloud.stream.binding.BindingBeanDefinitionRegistryUtils;
 import org.springframework.cloud.stream.binding.BindingService;
 import org.springframework.cloud.stream.binding.StreamListenerAnnotationBeanPostProcessor;
@@ -16,7 +14,6 @@ import org.springframework.cloud.stream.config.BindingProperties;
 import org.springframework.cloud.stream.config.BindingServiceProperties;
 import org.springframework.cloud.stream.messaging.DirectWithAttributesChannel;
 import org.springframework.cloud.stream.messaging.Sink;
-import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
 
@@ -32,6 +29,8 @@ public class MyStreamListenerAnnotationBeanPostProcessor extends StreamListenerA
     @Autowired
     DefaultListableBeanFactory defaultListableBeanFactory;
 
+
+
     @Override
     protected StreamListener postProcessAnnotation(StreamListener originalAnnotation, Method annotatedMethod) {
         logger.info("==============================");
@@ -45,17 +44,17 @@ public class MyStreamListenerAnnotationBeanPostProcessor extends StreamListenerA
 
         bindingServiceProperties.getBindings().put("input", bindingProperties);
 
-        BindingBeanDefinitionRegistryUtils.registerBindingTargetBeanDefinitions(
+/*        BindingBeanDefinitionRegistryUtils.registerBindingTargetBeanDefinitions(
                 Sink.class, Sink.class.getName(), defaultListableBeanFactory);
         BindingBeanDefinitionRegistryUtils
-                .registerBindingTargetsQualifiedBeanDefinitions(StreamApplication.class, Sink.class, defaultListableBeanFactory);
+                .registerBindingTargetsQualifiedBeanDefinitions(StreamApplication.class, Sink.class, defaultListableBeanFactory);*/
 
         return super.postProcessAnnotation(originalAnnotation, annotatedMethod);
     }
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        bindingService.bindConsumer(DirectWithAttributesChannel.class, "input");
+        //bindingService.bindConsumer(DirectWithAttributesChannel.class, "input");
         return bean;
     }
 }
