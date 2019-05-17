@@ -1,4 +1,13 @@
-[https://www.baeldung.com/spring-cloud-stream](https://www.baeldung.com/spring-cloud-stream)
+ref: [https://www.baeldung.com/spring-cloud-stream](https://www.baeldung.com/spring-cloud-stream)
+
+```sh
+# visit localhost:15672
+docker run -it --hostname rabbit-server \
+ --name my-rabbit \
+ -v /opt/rabbitmq/var/lib/rabbitmq:/var/lib/rabbitmq \
+ -p 5672:5672 -p 15671:15671 -p 15672:15672 \
+ rabbitmq:3-management
+```
 
 ## get start
 1. add `@EnableMyStreamListener` annotation;
