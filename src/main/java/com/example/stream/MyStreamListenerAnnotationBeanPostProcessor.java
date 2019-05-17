@@ -1,5 +1,6 @@
-package com.example.stream.annotation;
+package com.example.stream;
 
+import com.example.stream.annotation.MyStreamListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.cloud.stream.binding.BindingService;
 import org.springframework.cloud.stream.binding.StreamListenerAnnotationBeanPostProcessor;
 import org.springframework.cloud.stream.config.BindingProperties;
 import org.springframework.cloud.stream.config.BindingServiceProperties;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
@@ -39,9 +41,17 @@ public class MyStreamListenerAnnotationBeanPostProcessor extends StreamListenerA
         BindingProperties bindingProperties = bindingServiceProperties.getBindings().get(value);
 
         String defaultDestination = environment.getProperty("spring.cloud.stream.bindings.default.destination");
-        String defaultGroup = environment.getProperty("spring.cloud.stream.bindings.default.group-prefix")
-                + "." + environment.getProperty("spring.application.name") + "." + formatValue(value);
+        String defaultGroup = formatGroup(environment.getProperty("spring.cloud.stream.bindings.default.group-prefix"),
+                environment.getProperty("spring.application.name"), value);
         String defaultBinder = environment.getProperty("spring.cloud.stream.bindings.default.binder");
+
+        MyStreamListener myStreamListener = extract(annotatedMethod);
+        if (myStreamListener != null) {
+            defaultDestination = StringUtils.isEmpty(myStreamListener.destination()) ? defaultDestination : myStreamListener.destination();
+            defaultGroup = StringUtils.isEmpty(myStreamListener.group()) ? defaultGroup :
+                    formatGroup(environment.getProperty("spring.cloud.stream.bindings.default.group-prefix"), myStreamListener.group(), value);
+            defaultBinder = StringUtils.isEmpty(myStreamListener.binder()) ? defaultBinder : myStreamListener.binder();
+        }
 
         if (bindingProperties == null) {
             bindingProperties = new BindingProperties();
@@ -58,11 +68,20 @@ public class MyStreamListenerAnnotationBeanPostProcessor extends StreamListenerA
     private void restrictListenerValue(String value) {
         if (StringUtils.isEmpty(value) ||
                 !value.matches(LISTENER_NAME_PATTERN)) {
-            throw new IllegalArgumentException("StreamListener's Value Illegal : " + value);
+            throw new IllegalArgumentException("StreamListener's value Illegal : " + value);
         }
     }
 
-    private String formatValue(String value) {
-        return value.replaceAll("-", ".");
+    private String formatGroup(String prefix, String group, String value) {
+        return prefix + "." + group + "." + value.replaceAll("-", ".");
+    }
+
+    private MyStreamListener extract(Method method) {
+        MyStreamListener myStreamListener = AnnotatedElementUtils
+                .findMergedAnnotation(method, MyStreamListener.class);
+        if (myStreamListener != null && !method.isBridge()) {
+            return myStreamListener;
+        }
+        return null;
     }
 }

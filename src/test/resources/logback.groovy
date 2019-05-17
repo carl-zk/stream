@@ -4,7 +4,7 @@ def appenderList = []
 def LOG_DIR = "./"
 def isConsolePrint = true
 
-def env = "prot"
+def env = "dev"
 
 if ("pro" == env) {
     appenderList.add("ROLLING")

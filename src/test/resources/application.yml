@@ -13,6 +13,9 @@ spring:
         output:
           destination: staging
           binder: rabbit
+        events-booking-start:
+          destination: staging
+          binder: rabbit
       rabbit:
         bindings:
           input:
@@ -21,6 +24,12 @@ spring:
           output:
             producer:
               routing-key-expression: '"entities.user"'
+          entities-company:
+            consumer:
+              binding-routing-key: entities.company
+          events-booking-start:
+            producer:
+              routing-key-expression: '"events.booking.start"'
       binders:
         rabbit:
           type: rabbit
